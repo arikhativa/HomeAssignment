@@ -1,0 +1,32 @@
+version: '3.9'
+
+volumes:
+  postgres_data:
+
+networks:
+  postgres-network:
+
+services:
+  flask:
+    build: ./flask
+    container_name: flask
+    restart: "unless-stopped"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - postgres-network
+
+  db:
+    image: postgres:12.19-bullseye
+    container_name: postgres
+    restart: "unless-stopped"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: flask_db
+    networks:
+      - postgres-network
