@@ -2,16 +2,21 @@ from flask import request, jsonify
 from . import Session, db
 from .models import QuestionAnswer
 from .dataclasses import QuestionRequest
+from .decorators import validate_json, validate_question, validate_question_utf8
 
 
 def init_app(app):
     @app.route("/ask", methods=["POST"])
+    @validate_json
+    @validate_question
+    @validate_question_utf8
     def ask():
+
         data = request.get_json()
-        question_request = QuestionRequest(**data)
+        qr = QuestionRequest(**data)
 
         session = Session()
-        qa = QuestionAnswer(question=question_request.question, answer="answer")
+        qa = QuestionAnswer(question=qr.question, answer="answer")
         session.add(qa)
         session.commit()
         session.close()
