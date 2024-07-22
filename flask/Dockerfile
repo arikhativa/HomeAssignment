@@ -12,9 +12,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r requirements.txt
 
 # TODO copy  alembic
-COPY alembic.ini .
+# COPY alembic.ini .
 # COPY src .
 
 ENTRYPOINT [ "/alembic.sh" ]
 
-CMD flask --app flaskr run --host=0.0.0.0 --debug
+CMD flask --app src/flaskr run --host=0.0.0.0 --debug
