@@ -19,6 +19,10 @@ services:
       - postgres-network
     environment:
       SQLALCHEMY_DATABASE_URI: postgresql://user:pass@postgres:5432/flask_db
+    # TODO del vol
+    volumes:
+      - ./flask/alembic:/usr/src/app/alembic
+      - ./flask/src:/usr/src/app/
 
   db:
     image: postgres:12.19-bullseye

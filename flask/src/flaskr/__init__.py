@@ -12,18 +12,22 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 
-# # Models
 class QuestionAnswer(db.Model):
+    __tablename__ = "question_answer"
+
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(100), unique=False, nullable=False)
-    answer = db.Column(db.String(200), unique=False, nullable=False)
+    question = db.Column(db.String(), unique=False, nullable=False)
+    answer = db.Column(db.String(), unique=False, nullable=False)
+
+    def __init__(self, question, answer):
+        self.question = question
+        self.answer = answer
 
     def __repr__(self):
         return f"id: {self.id}, question: {self.question}, answer: {self.answer}"
 
 
 def create_app(test_config=None):
-    # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
@@ -43,14 +47,24 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
+    # TODO remove hello
     @app.route("/hello")
     def hello():
         return "Hello, World!"
 
-    db.init_app(app)
-    with app.app_context():
-        db.create_all()
+    @app.route("/ask")
+    def ask():
+        qa = QuestionAnswer(question="What is your name?", answer="My name is Chatbot")
+        db.session.add(qa)
+        db.session.commit()
 
-    print("done")
+        return "Question added"
+
+    @app.route("/get")
+    def get():
+        print(QuestionAnswer.query.all())
+        return "not yet"
+
+    db.init_app(app)
+
     return app
