@@ -10,6 +10,7 @@ engine = create_engine(os.environ["SQLALCHEMY_DATABASE_URI"])
 Session = sessionmaker(bind=engine)
 
 
+# TODO maybe del SQLALCHEMY_DATABASE_URI
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(

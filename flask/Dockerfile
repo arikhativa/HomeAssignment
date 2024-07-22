@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY migrations/alembic.sh /
 RUN chmod +x /alembic.sh
 
-COPY requirements/prod.txt ./requirements.txt
+COPY requirements.txt .
 
 # TODO check what mount does
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -17,4 +17,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 ENTRYPOINT [ "/alembic.sh" ]
 
-CMD flask --app src/flaskr run --host=0.0.0.0 --debug
+CMD flask --app src run --host=0.0.0.0 --debug

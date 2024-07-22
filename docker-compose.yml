@@ -17,8 +17,8 @@ services:
       - db
     networks:
       - postgres-network
-    environment:
-      SQLALCHEMY_DATABASE_URI: postgresql://user:pass@postgres:5432/flask_db
+    env_file: .env
+
     # TODO del vol
     volumes:
       - ./flask/:/usr/src/app/

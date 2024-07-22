@@ -1,8 +1,33 @@
+import os
 from flask import request, jsonify
 from . import Session, db
 from .models import QuestionAnswer
 from .dataclasses import QuestionRequest
 from .decorators import validate_json, validate_question, validate_question_utf8
+
+
+def call_openai(qr):
+    from openai import OpenAI
+
+    client = OpenAI(
+        organization=os.environ["OPENAI_ORG"],
+        project=os.environ["OPENAI_PROJ"],
+    )
+
+    stream = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": "Say this is a test"}],
+        stream=True,
+    )
+
+    ret = ""
+
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            ret += chunk.choices[0].delta.content
+            print(chunk.choices[0].delta.content, end="")
+
+    return ret
 
 
 def init_app(app):
@@ -19,8 +44,10 @@ def init_app(app):
         data = request.get_json()
         qr = QuestionRequest(**data)
 
+        answer = call_openai(qr)
+
         session = Session()
-        qa = QuestionAnswer(question=qr.question, answer="answer")
+        qa = QuestionAnswer(question=qr.question, answer=answer)
         session.add(qa)
         session.commit()
 
