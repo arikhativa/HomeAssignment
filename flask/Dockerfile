@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY migrations/alembic.sh /
 RUN chmod +x /alembic.sh
 
-COPY requirements.txt .
+COPY requirements/prod.txt ./requirements.txt
 
 # TODO check what mount does
 RUN --mount=type=cache,target=/root/.cache/pip \
