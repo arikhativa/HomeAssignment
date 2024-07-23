@@ -79,4 +79,4 @@ def test_qas_endpoint():
 
     assert (
         q.question == "Is there anybody in there?"
-    ), f"Unexpected question: { q.question}"
+    ), f"Unexpected question: {q.question}"

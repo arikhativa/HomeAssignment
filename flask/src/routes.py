@@ -1,5 +1,4 @@
 from flask import request, jsonify, g
-from . import Session
 from .models import QuestionAnswer
 from .dataclasses import QuestionRequest
 from .decorators import validate_json, validate_question
@@ -21,13 +20,13 @@ def init_app(app):
 
         answer, stt = call_openai(qr.question)
         if not stt:
-            app.logger.error(answer)
-            return jsonify({"message": "An error occurred"}), 500
+            return handle_500_error(e)
 
-        session = g.session
         qa = QuestionAnswer(question=qr.question, answer=answer)
-        session.add(qa)
-        session.commit()
+        try:
+            qa.save()
+        except Exception as e:
+            return handle_500_error(e)
 
         id = qa.id
         question = qa.question
@@ -37,8 +36,10 @@ def init_app(app):
 
     @app.route("/qa/<int:id>", methods=["GET"])
     def qa(id):
-        session = g.session
-        qa = session.query(QuestionAnswer).get(id)
+        try:
+            qa = QuestionAnswer.get_by_id(id)
+        except Exception as e:
+            return handle_500_error(e)
 
         if qa is None:
             return handle_404_error()
@@ -47,27 +48,28 @@ def init_app(app):
 
     @app.route("/qas", methods=["GET"])
     def qas():
-        session = g.session
-        # NOTE - since this is just for testing the limit is 200
-        questions = session.query(QuestionAnswer).limit(200).all()
+        try:
+            qas = QuestionAnswer.get_all(200)
+        except Exception as e:
+            return handle_500_error(e)
 
         result = [
-            {"id": qa.id, "question": qa.question, "answer": qa.answer}
-            for qa in questions
+            {"id": qa.id, "question": qa.question, "answer": qa.answer} for qa in qas
         ]
 
         return jsonify(result)
 
     @app.route("/qa/<int:id>", methods=["DELETE"])
     def delete_qa(id):
-        session = g.session
-        qa = session.query(QuestionAnswer).get(id)
+        qa = QuestionAnswer.get_by_id(id)
 
         if qa is None:
             return handle_404_error()
 
-        session.delete(qa)
-        session.commit()
+        try:
+            qa.delete()
+        except Exception as e:
+            return handle_500_error(e)
 
         return jsonify({"message": "QuestionAnswer deleted successfully"}), 200
 
@@ -75,3 +77,9 @@ def init_app(app):
     def handle_404_error(error=None):
         response = {"status": 404, "message": "The requested resource was not found."}
         return jsonify(response), 404
+
+    @app.errorhandler(500)
+    def handle_500_error(error=None):
+        app.logger.error(error)
+        response = {"status": 500, "message": "Internal Error"}
+        return jsonify(response), 500
