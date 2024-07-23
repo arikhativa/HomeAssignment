@@ -1,17 +1,16 @@
-from sqlalchemy.orm import DeclarativeBase
-from . import db
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
 
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
 
 
-class QuestionAnswer(db.Model):
+class QuestionAnswer(Base):
     __tablename__ = "question_answer"
 
-    id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(), unique=False, nullable=False)
-    answer = db.Column(db.String(), unique=False, nullable=False)
+    id = Column(Integer, primary_key=True)
+    question = Column(String(), unique=False, nullable=False)
+    answer = Column(String(), unique=False, nullable=False)
 
     def __init__(self, question, answer):
         self.question = question

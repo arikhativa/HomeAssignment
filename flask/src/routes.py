@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, g
 from . import Session
 from .models import QuestionAnswer
 from .dataclasses import QuestionRequest
@@ -24,7 +24,7 @@ def init_app(app):
         if not answer:
             return jsonify({"message": "An error occurred"}), 500
 
-        session = Session()
+        session = g.session
         qa = QuestionAnswer(question=qr.question, answer=answer)
         session.add(qa)
         session.commit()
@@ -33,15 +33,12 @@ def init_app(app):
         question = qa.question
         answer = qa.answer
 
-        session.close()
-
         return jsonify({"id": id, "question": question, "answer": answer})
 
     @app.route("/qa/<int:id>", methods=["GET"])
     def qa(id):
-        session = Session()
+        session = g.session
         qa = session.query(QuestionAnswer).get(id)
-        session.close()
 
         if qa is None:
             return handle_404_error()
@@ -50,10 +47,9 @@ def init_app(app):
 
     @app.route("/qas", methods=["GET"])
     def qas():
-        session = Session()
+        session = g.session
         # NOTE - since this is just for testing the limit is 200
         questions = session.query(QuestionAnswer).limit(200).all()
-        session.close()
 
         result = [
             {"id": qa.id, "question": qa.question, "answer": qa.answer}
@@ -64,16 +60,14 @@ def init_app(app):
 
     @app.route("/qa/<int:id>", methods=["DELETE"])
     def delete_qa(id):
-        session = Session()
+        session = g.session
         qa = session.query(QuestionAnswer).get(id)
 
         if qa is None:
-            session.close()
             return handle_404_error()
 
         session.delete(qa)
         session.commit()
-        session.close()
 
         return jsonify({"message": "QuestionAnswer deleted successfully"}), 200
 

@@ -1,10 +1,7 @@
 import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, g
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-db = SQLAlchemy()
 
 
 def get_url():
@@ -40,9 +37,17 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    db.init_app(app)
-
     from . import routes
+
+    @app.before_request
+    def before_request():
+        g.session = Session()
+
+    @app.teardown_request
+    def teardown_request(exception=None):
+        session = g.pop("session", None)
+        if session is not None:
+            session.close()
 
     routes.init_app(app)
 
