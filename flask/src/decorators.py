@@ -18,15 +18,12 @@ def validate_question(f):
         data = request.get_json()
         if "question" not in data or not data["question"].strip():
             return jsonify({"error": "'question' cannot be empty"}), 400
-        return f(*args, **kwargs)
-
-    return decorator
-
-
-def validate_question_utf8(f):
-    @wraps(f)
-    def decorator(*args, **kwargs):
-        data = request.get_json()
+        # NOTE - question must be less than 200 since this is the size reserved in the DB
+        if len(data["question"]) > 200:
+            return (
+                jsonify({"error": "'question' must be less than 200 characters"}),
+                400,
+            )
         question = data.get("question", "")
         try:
             question.encode("utf-8")

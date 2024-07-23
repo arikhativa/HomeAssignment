@@ -1,33 +1,9 @@
-import os
 from flask import request, jsonify
-from . import Session, db
+from . import Session
 from .models import QuestionAnswer
 from .dataclasses import QuestionRequest
-from .decorators import validate_json, validate_question, validate_question_utf8
-
-
-def call_openai(qr):
-    from openai import OpenAI
-
-    client = OpenAI(
-        organization=os.environ["OPENAI_ORG"],
-        project=os.environ["OPENAI_PROJ"],
-    )
-
-    stream = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": "Say this is a test"}],
-        stream=True,
-    )
-
-    ret = ""
-
-    for chunk in stream:
-        if chunk.choices[0].delta.content is not None:
-            ret += chunk.choices[0].delta.content
-            print(chunk.choices[0].delta.content, end="")
-
-    return ret
+from .decorators import validate_json, validate_question
+from .service_openai import call_openai
 
 
 def init_app(app):
@@ -39,13 +15,14 @@ def init_app(app):
     @app.route("/ask", methods=["POST"])
     @validate_json
     @validate_question
-    @validate_question_utf8
     def ask():
         data = request.get_json()
         qr = QuestionRequest(**data)
 
-        answer = "test"
-        # answer = call_openai(qr)
+        answer = call_openai(qr.question)
+
+        if not answer:
+            return jsonify({"message": "An error occurred"}), 500
 
         session = Session()
         qa = QuestionAnswer(question=qr.question, answer=answer)
@@ -74,7 +51,8 @@ def init_app(app):
     @app.route("/qas", methods=["GET"])
     def qas():
         session = Session()
-        questions = session.query(QuestionAnswer).all()
+        # NOTE - since this is just for testing the limit is 200
+        questions = session.query(QuestionAnswer).limit(200).all()
         session.close()
 
         result = [
