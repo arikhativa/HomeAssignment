@@ -23,11 +23,17 @@ db = os.getenv("POSTGRES_DB")
 url = f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
 config.set_main_option("sqlalchemy.url", url)
+
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+from src.models import QuestionAnswer
+
+target_metadata = QuestionAnswer.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

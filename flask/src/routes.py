@@ -28,11 +28,7 @@ def init_app(app):
         except Exception as e:
             return handle_500_error(e)
 
-        id = qa.id
-        question = qa.question
-        answer = qa.answer
-
-        return jsonify({"id": id, "question": question, "answer": answer})
+        return jsonify(qa.to_dict())
 
     @app.route("/qa/<int:id>", methods=["GET"])
     def qa(id):
@@ -44,7 +40,7 @@ def init_app(app):
         if qa is None:
             return handle_404_error()
 
-        return jsonify({"id": qa.id, "question": qa.question, "answer": qa.answer})
+        return jsonify(qa.to_dict())
 
     @app.route("/qas", methods=["GET"])
     def qas():
@@ -53,9 +49,7 @@ def init_app(app):
         except Exception as e:
             return handle_500_error(e)
 
-        result = [
-            {"id": qa.id, "question": qa.question, "answer": qa.answer} for qa in qas
-        ]
+        result = [qa.to_dict() for qa in qas]
 
         return jsonify(result)
 
