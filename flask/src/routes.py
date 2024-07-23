@@ -19,9 +19,9 @@ def init_app(app):
         data = request.get_json()
         qr = QuestionRequest(**data)
 
-        answer = call_openai(qr.question)
-
-        if not answer:
+        answer, stt = call_openai(qr.question)
+        if not stt:
+            app.logger.error(answer)
             return jsonify({"message": "An error occurred"}), 500
 
         session = g.session

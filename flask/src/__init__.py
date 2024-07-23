@@ -21,10 +21,11 @@ Session = sessionmaker(bind=engine)
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+    is_debug = os.getenv("DEBUG", "False")
     app.config.from_mapping(
         SECRET_KEY="dev",
         SQLALCHEMY_DATABASE_URI=url,
-        DEBUG=os.getenv("DEBUG", "False"),
+        DEBUG=bool(is_debug),
     )
 
     if test_config is None:

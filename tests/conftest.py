@@ -1,7 +1,7 @@
 import pytest
 import requests
 
-# TODO
+# If you change the port or host, make sure to change it in the test as well
 port = 80
 host = "localhost"
 

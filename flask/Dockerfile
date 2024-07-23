@@ -4,7 +4,6 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt .
 
-# TODO check what mount does
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r requirements.txt
 
