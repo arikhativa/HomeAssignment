@@ -44,7 +44,8 @@ def init_app(app):
         data = request.get_json()
         qr = QuestionRequest(**data)
 
-        answer = call_openai(qr)
+        answer = "test"
+        # answer = call_openai(qr)
 
         session = Session()
         qa = QuestionAnswer(question=qr.question, answer=answer)
