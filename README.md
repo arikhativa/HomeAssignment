@@ -1,11 +1,41 @@
 # Home Assignment
 
-## Design
-![Alt text](res/design.png)
+## Project Structure
+```
+├── README.md
+├── docker-compose.yml
+├── flask
+│   ├── Dockerfile
+│   ├── alembic
+│   ├── entrypoint.sh
+│   ├── requirements.txt
+│   └── src
+│       ├── __init__.py
+│       ├── decorators.py
+│       ├── models.py
+│       ├── routes.py
+│       ├── service_openai.py
+│       └── types.py
+├── res
+└── tests
+```
 
-## Flows
-![Alt text](res/flows.png)
+## Technologies Used
+* Programming Language: Python 
+* Framework: Flask
+* Database: PostgreSQL
+* ORM: SQLAlchemy
+* Migrations: Alembic
+* Testing: pytest
+* Containerization: Docker
 
+## Prerequisites
+#### Run
+* Docker
+* Docker Compose
+#### Test
+* python
+* pytest
 
 ## Setup
 Create a `.env` file from the `.env.example`
@@ -18,41 +48,9 @@ Use `docker compose` to run the project:
 docker compose up -d --build
 ```
 
-## Server API
-This server exposes theses endpoints:
-
-- **GET /is_up**: Checks if the Flask server is running.
-  - **Response**: Status code 200 if the server is up.
-
-- **POST /ask**: Submits a question to the server.
-  - **Request Body**: JSON object containing the question.
-  - **Response**: Status code 200 and a JSON object.
-
-**/ask Post Req**
-```
-{
-    curl -X POST http://localhost/ask -H "Content-Type: application/json" -d  '{"question": "Who am I?"}'
-}
-```
-
-- **GET /qa/{id}**: Retrieves the question and answer for the given `id`.
-  - **Response**: Status code 200 and a JSON object.
-- 
-- **GET /qas/**: Retrieves all questions and answers.
-  - **Response**: Status code 200 and a JSON object.
-
-#### A `QuestionAnswer` Object:
-```
-{
-    "id": int
-    "question": string
-    "answer": string
-    "created_at": string
-}
-```
 
 ## Test
-### Instal pytest dependencies
+### Install pytest dependencies
 Create a venv:
 ```
  python3 -m venv .venv   
@@ -65,12 +63,56 @@ Install dependencies
 ```
  pip install -r tests/requirements.txt
 ```
-### Setup
-In `conftest.py` make sure `port` and `host` a set to the same ones in the `docker compose`
 
 ### Run
 ```
 pytest tests
+```
+
+**NOTE** - In `conftest.py` make sure `port` and `host` a set to the same ones in the `docker compose`
+
+
+## About The Project
+### Components
+* **Flask** - a web server that runs in a container.
+* **OpenAI** - a service we use to generate answers to questions.
+* **Postgres**
+* **Volume**
+<br>
+<br>
+
+![Alt text](res/design.png)
+
+### Endpoints
+- **POST /ask**: Submits a question to the server.
+  - **Request Body**: JSON object containing the question.
+  - **Response**: Status code 200 and a JSON object.
+- **GET /is_up**: Checks if the Flask server is running.
+  - **Response**: Status code 200 if the server is up.
+- **GET /qa/{id}**: Retrieves the question and answer for the given `id`.
+  - **Response**: Status code 200 and a JSON object.
+- **GET /qas/**: Retrieves all questions and answers.
+  - **Response**: Status code 200 and a JSON object.
+
+
+<br>
+
+![Alt text](res/flows.png)
+
+#### Example `/ask` Post Req
+```
+    curl -X POST http://localhost/ask -H "Content-Type: application/json" -d  '{"question": "Who am I?"}'
+```
+
+
+#### A `QuestionAnswer` Object:
+```
+{
+    "id": int
+    "question": string
+    "answer": string
+    "created_at": string
+}
 ```
 
 ## Development Tools
@@ -83,3 +125,4 @@ docker exec -it flask alembic revision --autogenerate -m "<MESSAGE>"
 ```
 docker exec -it flask alembic upgrade head
 ```
+
