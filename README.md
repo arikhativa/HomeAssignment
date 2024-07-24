@@ -28,19 +28,20 @@
 * Migrations: Alembic
 * Testing: pytest
 * Containerization: Docker
+* CI: GitHub Actions
 
 ## Prerequisites
 #### Run
 * Docker
 * Docker Compose
 #### Test
-* python
+* Python
 * pytest
 
 ## Setup
 Create a `.env` file from the `.env.example`
 
-**Note** - you need to provide a valid `OPENAI_API_KEY`
+**Note** - You need to provide a valid `OPENAI_API_KEY`
 
 ## Run
 Use `docker compose` to run the project:
@@ -51,11 +52,11 @@ docker compose up -d --build
 
 ## Test
 ### Install pytest dependencies
-Create a venv:
+Create a virtual environment (venv):
 ```
  python3 -m venv .venv   
 ```
-Activate venv
+Activate the virtual environment
 ```
  source .venv/bin/activate 
 ```
@@ -117,7 +118,7 @@ pytest tests
 
 ## Development Tools
 ### Adding migrations
-First change a modal in `modals.py`, then run:
+First, change a model in `modals.py`, then run:
 ```
 docker exec -it flask alembic revision --autogenerate -m "<MESSAGE>"
 ```
@@ -126,3 +127,8 @@ docker exec -it flask alembic revision --autogenerate -m "<MESSAGE>"
 docker exec -it flask alembic upgrade head
 ```
 
+## CI
+The `CI` is GitHub Actions. It generates a `.env` file with a secret OpenAI token.<br>
+Then builds the project and runs it with `docker compose`.<br>
+It runs some basic tests with `pytest`.
+On failure, it prints the logs of the `flask` container.
