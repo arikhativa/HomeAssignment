@@ -58,6 +58,9 @@ Install dependencies
 ```
  pip install -r requirements.txt
 ```
+### Setup
+In `conftest.py` make sure `port` and `host` a set to the same ones in the `docker compose`
+
 ### Run
 ```
 pytest tests

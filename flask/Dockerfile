@@ -19,6 +19,6 @@ COPY alembic.ini .
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-
+# NOTE - remove --reload for production
 ENV LOG_LEVEL=info
-CMD gunicorn --chdir src --bind 0.0.0.0:8000 --workers 1 --log-level=$LOG_LEVEL 'src:create_app()'
+CMD gunicorn --chdir src --bind 0.0.0.0:8000 --workers 1 --reload --log-level=$LOG_LEVEL 'src:create_app()'

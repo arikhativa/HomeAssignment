@@ -1,4 +1,5 @@
 from openai import OpenAI
+from .types import HTTPStatusCode
 
 
 def call_openai(prompt):
@@ -11,9 +12,11 @@ def call_openai(prompt):
             messages=[{"role": "user", "content": prompt}],
         )
         msg = completion.choices[0].message.content
-        if len(msg) > 200:
-            return "Response is too long", False
-        return msg, True
+        if len(msg) >= 200:
+            return f"Response is too long", HTTPStatusCode.BAD_REQUEST
+        return msg, HTTPStatusCode.OK
 
     except Exception as e:
-        return f"An error occurred: {e}", False
+        if e:
+            return f"An error occurred: {e}", HTTPStatusCode.INTERNAL_SERVER_ERROR
+        return f"An error occurred", HTTPStatusCode.INTERNAL_SERVER_ERROR

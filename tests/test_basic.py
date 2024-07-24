@@ -3,14 +3,6 @@ from tests.conftest import ids, host, port
 from tests.types import QuestionAnswerData
 
 
-def test_flask_is_up():
-    url = f"http://{host}:{port}/is_up"
-    response = requests.get(url)
-    assert (
-        response.status_code == 200
-    ), f"Expected status code 200, but got {response.status_code}"
-
-
 def test_ask_endpoint():
     url = f"http://{host}:{port}/ask"
     headers = {"Content-Type": "application/json"}

@@ -19,8 +19,10 @@ def init_app(app):
         qr = QuestionRequest(**data)
 
         answer, stt = call_openai(qr.question)
-        if not stt:
-            return handle_500_error(e)
+        if stt == HTTPStatusCode.BAD_REQUEST:
+            return handle_400_error(answer)
+        if stt == HTTPStatusCode.INTERNAL_SERVER_ERROR:
+            return handle_500_error(answer)
 
         qa = QuestionAnswer(question=qr.question, answer=answer)
         try:
@@ -71,6 +73,17 @@ def init_app(app):
         )
         return jsonify(ret)
 
+    @app.errorhandler(400)
+    def handle_400_error(msg=None):
+        message = "Bad Request"
+        if msg:
+            message = msg
+        ret = HTTPResponse(
+            status=HTTPStatusCode.BAD_REQUEST.value,
+            message=message,
+        )
+        return jsonify(ret), HTTPStatusCode.NOT_FOUND.value
+
     @app.errorhandler(404)
     def handle_404_error():
         ret = HTTPResponse(
@@ -81,7 +94,8 @@ def init_app(app):
 
     @app.errorhandler(500)
     def handle_500_error(error=None):
-        app.logger.error(error)
+        if error:
+            app.logger.error(error)
         ret = HTTPResponse(
             status=HTTPStatusCode.INTERNAL_SERVER_ERROR.value,
             message="Internal Error",
