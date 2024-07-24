@@ -31,10 +31,11 @@
 * CI: GitHub Actions
 
 ## Prerequisites
-#### Run
+To run the project:
 * Docker
 * Docker Compose
-#### Test
+
+To test the project:
 * Python
 * pytest
 
@@ -43,16 +44,16 @@ Create a `.env` file from the `.env.example`
 
 **Note** - You need to provide a valid `OPENAI_API_KEY`
 
-## Run
+## How to run
 Use `docker compose` to run the project:
 ```
 docker compose up -d --build
 ```
 
 
-## Test
+## How to test
 ### Install pytest dependencies
-Create a virtual environment (venv):
+Create a virtual environment (venv)
 ```
  python3 -m venv .venv   
 ```
@@ -65,7 +66,7 @@ Install dependencies
  pip install -r tests/requirements.txt
 ```
 
-### Run
+Run Tests
 ```
 pytest tests
 ```
@@ -98,6 +99,7 @@ pytest tests
 
 <br>
 
+### Flows
 ![Alt text](res/flows.png)
 
 #### Example `/ask` Post Req
@@ -106,7 +108,7 @@ pytest tests
 ```
 
 
-#### A `QuestionAnswer` Object:
+#### Example `QuestionAnswer` Object:
 ```
 {
     "id": int
