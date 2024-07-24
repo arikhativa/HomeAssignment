@@ -1,6 +1,6 @@
 from flask import request, jsonify, g
 from .models import QuestionAnswer
-from .dataclasses import QuestionRequest
+from .dataclasses import HTTPResponse, HTTPStatusCode, QuestionRequest
 from .decorators import validate_json, validate_question
 from .service_openai import call_openai
 
@@ -65,15 +65,25 @@ def init_app(app):
         except Exception as e:
             return handle_500_error(e)
 
-        return jsonify({"message": "QuestionAnswer deleted successfully"}), 200
+        ret = HTTPResponse(
+            status=HTTPStatusCode.OK.value,
+            message="QuestionAnswer deleted successfully",
+        )
+        return jsonify(ret)
 
     @app.errorhandler(404)
-    def handle_404_error(error=None):
-        response = {"status": 404, "message": "The requested resource was not found."}
-        return jsonify(response), 404
+    def handle_404_error():
+        ret = HTTPResponse(
+            status=HTTPStatusCode.NOT_FOUND.value,
+            message="The requested resource was not found.",
+        )
+        return jsonify(ret), HTTPStatusCode.NOT_FOUND.value
 
     @app.errorhandler(500)
     def handle_500_error(error=None):
         app.logger.error(error)
-        response = {"status": 500, "message": "Internal Error"}
-        return jsonify(response), 500
+        ret = HTTPResponse(
+            status=HTTPStatusCode.INTERNAL_SERVER_ERROR.value,
+            message="Internal Error",
+        )
+        return jsonify(ret), HTTPStatusCode.NOT_FOUND.value

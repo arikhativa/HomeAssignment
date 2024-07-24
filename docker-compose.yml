@@ -18,6 +18,10 @@ services:
     networks:
       - postgres-network
     env_file: .env
+    # NOTE - this is for development only
+    volumes:
+      - ./flask/src:/usr/src/app/src
+      - ./flask/alembic:/usr/src/app/alembic
 
   db:
     image: postgres:12.19-bullseye
@@ -25,7 +29,6 @@ services:
     restart: "unless-stopped"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    # NOTE - Better to use different .env files for different services
     env_file: .env
     networks:
       - postgres-network
