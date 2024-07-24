@@ -1,5 +1,12 @@
 # Home Assignment
 
+## Design
+![Alt text](res/design.png)
+
+## Flows
+![Alt text](res/flows.png)
+
+
 ## Setup
 Create a `.env` file from the `.env.example`
 
@@ -56,7 +63,7 @@ Activate venv
 ```
 Install dependencies
 ```
- pip install -r requirements.txt
+ pip install -r tests/requirements.txt
 ```
 ### Setup
 In `conftest.py` make sure `port` and `host` a set to the same ones in the `docker compose`

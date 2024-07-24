@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create .env file
+        run: |
+          cp .env.example .env
+          sed -i 's/^OPENAI_API_KEY=.*/OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY_SECRET }}/' .env
+
+      - name: Build and push Docker image
+        run: docker compose build
+
+      - name: Run Docker Compose
+        run: docker compose up -d
+
+      - name: Install tests dependencies
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+            pip install -r tests/requirements.txt
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          pytest tests
+
+      - name: On failure
+        if: failure()
+        run: |
+          docker compose logs flask

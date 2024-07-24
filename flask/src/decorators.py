@@ -18,10 +18,10 @@ def validate_question(f):
         data = request.get_json()
         if "question" not in data or not data["question"].strip():
             return jsonify({"error": "'question' cannot be empty"}), 400
-        # NOTE - question must be less than 200 since this is the size reserved in the DB
-        if len(data["question"]) > 200:
+        # NOTE - question must be less than 2000 for performance reasons
+        if len(data["question"]) > 2000:
             return (
-                jsonify({"error": "'question' must be less than 200 characters"}),
+                jsonify({"error": "'question' must be less than 2000 characters"}),
                 400,
             )
         question = data.get("question", "")
