@@ -12,10 +12,13 @@ RUN apt-get update && apt-get install -y postgresql-client
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
-COPY src ./src
-COPY alembic ./alembic
+# NOTE - since this is a development image, we use volumes and not COPY
+# COPY src ./src
+# COPY alembic ./alembic
 COPY alembic.ini .
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD flask --app src run --host=0.0.0.0
+
+ENV LOG_LEVEL=info
+CMD gunicorn --chdir src --bind 0.0.0.0:8000 --workers 1 --log-level=$LOG_LEVEL 'src:create_app()'

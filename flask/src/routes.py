@@ -1,6 +1,6 @@
 from flask import request, jsonify, g
 from .models import QuestionAnswer
-from .dataclasses import HTTPResponse, HTTPStatusCode, QuestionRequest
+from .types import HTTPResponse, HTTPStatusCode, QuestionRequest
 from .decorators import validate_json, validate_question
 from .service_openai import call_openai
 

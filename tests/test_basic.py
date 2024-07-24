@@ -1,6 +1,6 @@
 import requests
 from tests.conftest import ids, host, port
-from tests.dataclasses import QuestionAnswerData
+from tests.types import QuestionAnswerData
 
 
 def test_flask_is_up():
